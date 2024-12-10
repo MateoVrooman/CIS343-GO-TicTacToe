@@ -10,13 +10,18 @@ Run with: go run app/main.go
 
 package main
 
-import "fmt"
+import (
+	"fmt"
+	"math/rand"
+	"time"
+)
 
 // Main()
 // Main function contains the primary logic for the function of the game. First, the board is initialized
 // then the main game loop occurs. The board is printed, and the game checks for a win condition.
 // If a player has won, the loop ends, otherwise the player can make a move and update the board.
 func main(){
+
 	var board [3][3]string
 	var currentPlayer string
 
@@ -25,7 +30,12 @@ func main(){
 	// For loop without condition creates infinite loop. Game loop ends when a player wins, or the board is full
 	for {
 		printBoard(board)
-		playerMove(&board, currentPlayer) // There is no end-game condition, so player moves
+		if currentPlayer == "X" { // Player moves
+			playerMove(&board, currentPlayer) // There is no end-game condition, so player moves
+		} else {
+			computerMove(&board, currentPlayer) // Computer randomly selects a move
+		}
+		
 		if winner := checkWinner(board, currentPlayer); winner != "" { // := operator is used to declare and initialize variable
 			printBoard(board)
 			fmt.Printf("Player %s wins!\n", winner) // Print the winner
@@ -85,6 +95,25 @@ func playerMove(board *[3][3]string, currentPlayer string) {
 			break
 		}
 		fmt.Println("Invalid move. Try again.")
+	}
+}
+
+// computerMove()
+// Selects a random move and applies it to the board if that cell is empty
+// Parameters:
+// board: A pointer to a 3x3 2 dimensional array of strings
+// currentPlayer: A string containing the current player
+func computerMove(board *[3][3]string, currentPlayer string){
+	rng := rand.New(rand.NewSource(time.Now().UnixNano()))
+
+	for {
+		row := rng.Intn(3) // Random row between 0-2
+		col := rng.Intn(3) // Random column between 0-2
+		if (*board)[row][col] == " " {
+			fmt.Printf("Computer chooses move: %d %d\n", row, col)
+			(*board)[row][col] = currentPlayer // Place the O in the cell
+			break // Exit the loop
+		}
 	}
 }
 
